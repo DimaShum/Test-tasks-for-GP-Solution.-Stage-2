@@ -5,35 +5,25 @@ import java.util.*;
 import java.util.regex.Pattern;
 
 public class Main {
-
-
-
     public static void main(String[] args) throws IOException {
 
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-
         ArrayList<String> result = new ArrayList<>();
-
+        Pattern pattern = Pattern.compile(" ");
         Boolean hasNext = true;
 
-        Pattern pattern = Pattern.compile(" ");
-
-
         while (hasNext) {
+            String line = reader.readLine();
 
-            String str = reader.readLine();
-
-            if (str.length() != 0) {
-
-                String line = removeChar(str, ';');
-
-                String[] words = pattern.split(line);
+            if (line.length() != 0) {
+                String str = removeChar(line, ';');
+                String[] words = pattern.split(str);
 
                 for (String redex : args) {
                     for (String word : words) {
                         if (Pattern.matches(redex, word)) {
-                            if (!result.contains(str))
-                                result.add(str);
+                            if (!result.contains(line))
+                                result.add(line);
                         }
                     }
                 }
@@ -41,6 +31,7 @@ public class Main {
                 hasNext = false;
             }
         }
+
         for (String str : result)
             System.out.println(str);
     }
