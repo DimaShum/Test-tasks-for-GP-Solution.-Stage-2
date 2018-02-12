@@ -1,18 +1,32 @@
 import java.math.BigDecimal;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Calc {
 
     public BigDecimal estimate(String s) throws Exception {
-        s = s.replace(",", ".");
-        s = s.replaceAll("\\s+", "");
 
+        if (!hasSpaceBetweenNumbers(s)) {
+            s = s.replace(",", ".");
+            s = s.replaceAll("\\s+", "");
 
-        Answer answer = PlusMinus(s);
-        if (!answer.rest.isEmpty()) {
-            System.err.println("Error: can't full parse");
-            System.err.println("rest: " + answer.rest);
+            Answer answer = PlusMinus(s);
+            if (!answer.rest.isEmpty()) {
+                System.err.println("Error: can't full parse");
+                System.err.println("rest: " + answer.rest);
+            }
+
+            return answer.acc;
+        } else {
+            throw new Exception("Invalid data: String has space between numbers");
         }
-        return answer.acc;
+    }
+
+    private boolean hasSpaceBetweenNumbers(String s) {
+        Pattern pattern = Pattern.compile("\\d+\\s+\\d+");
+        Matcher matcher = pattern.matcher(s);
+
+        return matcher.find();
     }
 
     private Answer PlusMinus(String s) throws Exception {
@@ -80,7 +94,6 @@ public class Calc {
             } else {
                 return current;
             }
-
         }
 
         return current;
@@ -94,7 +107,7 @@ public class Calc {
             if (!r.rest.isEmpty() && r.rest.charAt(0) == ')') {
                 r.rest = r.rest.substring(1);
             } else {
-                System.err.println("Error: not close bracket");
+                throw new Exception("Invalid data: String hasn't close bracket");
             }
             return r;
         }
@@ -114,13 +127,13 @@ public class Calc {
         while (i < s.length() && (Character.isDigit(s.charAt(i)) || (s.charAt(i) == '.') || s.charAt(i) == ',')) {
             // но также проверям, что в числе может быть только одна точка!
             if ((s.charAt(i) == '.' || s.charAt(i) == ',') && ++dot_cnt > 1) {
-                throw new Exception("invalid data");
+                throw new Exception("Invalid data: String has too much '.' in numbers");
             }
             i++;
         }
 
         if( i == 0 ){ // что-либо похожее на число мы не нашли
-            throw new Exception("invalid date");
+            throw new Exception("Invalid data");
         }
 
         BigDecimal dPart =  new BigDecimal(s.substring(0, i));
